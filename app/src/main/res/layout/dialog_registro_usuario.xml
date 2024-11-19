@@ -1,0 +1,86 @@
+<!-- res/layout/dialog_registro_usuario.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/nomUsuariodialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <EditText
+            android:id="@+id/Nomempresadialog"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Carlos Enrique Dominguez" />
+
+        <TextView
+            android:id="@+id/phonedialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teléfono"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <EditText
+            android:id="@+id/phone1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="987456123" />
+
+        <TextView
+            android:id="@+id/Correoadialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correo Electrónico"
+            android:textColor="@android:color/holo_blue_dark" />
+
+        <EditText
+            android:id="@+id/Correoa1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Ejemplo@gmail.com" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/Passdialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contraseña"
+                android:textColor="@android:color/holo_blue_dark" />
+
+            <EditText
+                android:id="@+id/passwordlogdialog"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/Passdialog"
+                android:layout_marginTop="8dp"
+                android:hint="Contraseña"
+                android:inputType="textPassword" />
+
+            <ImageView
+                android:id="@+id/eye_icondialog"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignTop="@id/passwordlog"
+                android:layout_alignBottom="@id/passwordlogdialog"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="-1dp"
+                android:padding="5dp"
+                android:src="@drawable/eyepass" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>

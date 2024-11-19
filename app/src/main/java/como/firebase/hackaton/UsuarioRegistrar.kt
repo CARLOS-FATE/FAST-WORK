@@ -91,6 +91,8 @@ class UsuarioRegistrar : AppCompatActivity() {
                     if (userId != null) {
                         db.collection("usuarios").document(userId).set(user)
                             .addOnSuccessListener {
+                                saveUserType(2)
+                                saveUserData(nombre, email)
                                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
@@ -119,4 +121,20 @@ class UsuarioRegistrar : AppCompatActivity() {
             }
         }
     }
+
+    private fun saveUserType(userType: Int) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt("UserType", userType)
+        editor.apply()
+    }
+
+    private fun saveUserData(username: String, email: String, ) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserName", username)
+        editor.putString("UserEmail", email)
+        editor.apply()
+    }
+
 }

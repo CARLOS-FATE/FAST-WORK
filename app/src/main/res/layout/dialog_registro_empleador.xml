@@ -1,0 +1,129 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutdialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/Serviciodialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Servicio"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/Servicio1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Nombre del servicio que brinda" />
+
+        <TextView
+            android:id="@+id/DNIdialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DNI"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/DNI1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="12345678" />
+
+        <TextView
+            android:id="@+id/phonedialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teléfono"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/phone1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="987456123" />
+
+        <TextView
+            android:id="@+id/paisdialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pais"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/pais1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="PERU" />
+
+        <TextView
+            android:id="@+id/departamentodialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Departamento"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/departamento1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Departamento" />
+
+        <TextView
+            android:id="@+id/ciudaddialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ciudad"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/ciudad1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Ciudad" />
+
+        <TextView
+            android:id="@+id/Correoadialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correo Electrónico"
+            android:textColor="#93a5eb" />
+
+        <EditText
+            android:id="@+id/Correoa1dialog"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Ejemplo@gmail.com" />
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginVertical="10dp"
+           android:gravity="center">
+           <Button
+               android:id="@+id/cancelarEmpleadordialog"
+               android:layout_width="wrap_content"
+               android:layout_height="50dp"
+               android:layout_gravity="center_horizontal"
+               android:layout_marginHorizontal="5dp"
+               android:backgroundTint="@color/gray"
+               android:text="Cancelar"/>
+
+           <Button
+               android:id="@+id/guardarEmpleadordialog"
+               android:layout_width="wrap_content"
+               android:layout_height="50dp"
+               android:layout_gravity="center_horizontal"
+               android:layout_marginHorizontal="5dp"
+               android:text="Guardar"/>
+
+       </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

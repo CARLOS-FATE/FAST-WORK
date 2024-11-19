@@ -36,6 +36,9 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 facebook-login = {group ="com.facebook.android", name ="facebook-login", version.ref = "facebook"}
 facebook-android-sdk = {group ="com.facebook.android", name ="facebook-android-sdk", version.ref= "facebook"}
 
+google-zxing = { group = "com.google.zxing", name = "core", version = "3.4.1" }
+journeyapps-zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version = "4.3.0" }
+
 
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }

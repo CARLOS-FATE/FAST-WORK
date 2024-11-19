@@ -59,22 +59,23 @@
             android:id="@+id/iconLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="20dp"
+            android:backgroundTint="#FFFFFF"
             android:orientation="horizontal"
+            android:padding="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <!-- Imagen Mapa -->
             <ImageView
                 android:id="@+id/mapa"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginHorizontal="15dp"
                 android:contentDescription="Mapa"
                 android:src="@drawable/mapa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginHorizontal="15dp"
                 tools:layout_editor_absoluteX="20dp" />
 
             <!-- Imagen Portafolio -->
@@ -82,9 +83,9 @@
                 android:id="@+id/portafolio"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginHorizontal="15dp"
                 android:contentDescription="Portafolio"
                 android:src="@drawable/portafolio"
-                android:layout_marginHorizontal="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="130dp" />
@@ -94,9 +95,9 @@
                 android:id="@+id/servicio"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginHorizontal="15dp"
                 android:contentDescription="Servicio"
                 android:src="@drawable/service"
-                android:layout_marginHorizontal="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="240dp" />
@@ -106,9 +107,9 @@
                 android:id="@+id/sanguichito"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginHorizontal="15dp"
                 android:contentDescription="Sanguichito"
                 android:src="@drawable/sanguchito"
-                android:layout_marginHorizontal="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

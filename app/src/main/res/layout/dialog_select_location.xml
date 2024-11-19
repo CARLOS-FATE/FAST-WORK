@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10sp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Nombre del Empleo"
+            android:textColor="#1e1f22"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/nombreEmpleoDialog"
+            android:layout_width="320dp"
+            android:layout_height="48dp"
+            android:hint="Nombre del Empleo"
+            android:padding="5sp" />
+        />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Descripción"
+            android:textColor="#1e1f22"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/descripcionEmpleoDialog"
+            android:layout_width="320dp"
+            android:layout_height="100dp"
+            android:gravity="top"
+            android:hint="Descripción del Empleo"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:padding="5sp"
+            android:scrollbars="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="#1e1f22"
+            android:textSize="18sp"
+            android:text="Monto del empleo"/>
+
+        <EditText
+            android:id="@+id/montoEmpleoDialog"
+            android:layout_width="320dp"
+            android:layout_height="48dp"
+            android:hint="Monto del empleo"
+            android:inputType="number"
+            android:padding="5sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Selecciona la ubicación del empleo"
+            android:textColor="#1e1f22"
+            android:textSize="20sp" />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapViewDialog"
+            android:layout_width="320dp"
+            android:layout_height="400dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_marginHorizontal="5dp"
+                android:id="@+id/btnSelectLocationDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guardar Empleo" />
+            <Button
+                android:layout_marginHorizontal="5dp"
+                android:id="@+id/btnCancelarEmpleoDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/gray"
+                android:text="Cancelar" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

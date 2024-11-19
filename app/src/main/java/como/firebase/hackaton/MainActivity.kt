@@ -1,20 +1,19 @@
 package como.firebase.hackaton
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var callbackManager: CallbackManager
     private lateinit var auth: FirebaseAuth
     private var isPasswordVisible = false
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,16 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize FirebaseAuth
         auth = FirebaseAuth.getInstance()
-
-        // Check if user is already logged in
-        if (auth.currentUser != null) {
-            // User is logged in, navigate to MapaUsuarios activity
-            navigateTo(MapaUsuarios::class.java)
-        } else {
-            // Assign views
-            initializeViews()
-
-        }
+        db = FirebaseFirestore.getInstance()
+        initializeViews()
 
         // Initialize Facebook CallbackManager
         callbackManager = CallbackManager.Factory.create()
@@ -56,6 +48,12 @@ class MainActivity : AppCompatActivity() {
 
         // Set text color in EditTexts
         setTextColor()
+
+        // Check if user is already logged in
+        if (auth.currentUser != null) {
+            // User is logged in, navigate to MapaUsuarios activity
+            navigateTo(MapaUsuarios::class.java)
+        }
     }
 
 
@@ -89,18 +87,73 @@ class MainActivity : AppCompatActivity() {
         val password = passwordEditText.text.toString()
 
         if (email.isNotEmpty() && password.isNotEmpty()) {
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        showToast("Inicio de sesión exitoso")
-                        navigateTo(MapaUsuarios::class.java)
-                    } else {
-                        showToast("Error de autenticación: ${task.exception?.message}")
+
+            if (isNetworkAvailable(this)) {
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            showToast("Inicio de sesión exitoso")
+                            val userId = auth.currentUser?.uid
+                            checkUserType(userId ?: "")
+                        } else {
+                            showToast("Error de autenticación: ${task.exception?.message}")
+                        }
                     }
-                }
+            } else {
+                showToast("Por favor, completa todos los campos")
+            }
         } else {
-            showToast("Por favor, completa todos los campos")
+            showToast("No hay conexión a Internet")
         }
+    }
+
+    private fun saveUserType(userType: Int) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt("UserType", userType)
+        editor.apply()
+    }
+
+    private fun saveUserData(username: String, email: String, ) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserName", username)
+        editor.putString("UserEmail", email)
+        editor.apply()
+    }
+
+
+    private fun checkUserType(userId: String) {
+        // Check in Empleadores collection
+        db.collection("Empleadores").document(userId).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result.exists()) {
+                    // User ID found in Empleadores collection
+                    showToast("El usuario pertenece a un Empleador")
+                    saveUserData(task.result.getString("nombreServicio") ?: "", task.result.getString("correo") ?: "")
+                    saveUserType(1)
+                    navigateTo(MapaUsuarios::class.java)
+                } else {
+                    // Check in Usuarios collection
+                    db.collection("usuarios").document(userId).get()
+                        .addOnCompleteListener { userTask ->
+                            if (userTask.isSuccessful && userTask.result.exists()) {
+                                // User ID found in Usuarios collection
+                                showToast("El usuario pertenece a un Usuario")
+                                saveUserType(2)
+                                saveUserData(userTask.result.getString("nombre") ?: "", userTask.result.getString("email") ?: "")
+                                navigateTo(MapaUsuarios::class.java)
+                            } else {
+                                // User ID not found in either collection
+                                showToast("El usuario no se encuentra registrado")
+                                saveUserType(0)
+                            }
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                showToast("Error al verificar el tipo de usuario: ${exception.message}")
+            }
     }
 
     private fun loginWithFacebook() {
@@ -137,29 +190,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginWithGoogle() {
-//        val signInRequest = BeginSignInRequest.builder()
-//            .setGoogleIdTokenRequestOptions(
-//                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-//                    .setSupported(true)
-//                    .setServerClientId(getString(R.string.your_web_client_id))
-//                    .setFilterByAuthorizedAccounts(false)
-//                    .build()
-//            )
-//            .build()
-//
-//        try {
-//            val signInClient = Identity.getSignInClient(this)
-//            signInClient.beginSignIn(signInRequest)
-//                .addOnSuccessListener { result ->
-//                    showToast("Iniciando sesión con Google")
-//                }
-//                .addOnFailureListener { e ->
-//                    showToast("Error al iniciar sesión con Google: ${e.message}")
-//                }
-//        } catch (e: Exception) {
-//            showToast("Error inesperado: ${e.message}")
-//        }
+        showToast("Iniciar sesión con Google no implementado")
     }
+
 
     private fun navigateToForgotPassword() {
         navigateTo(Trabajo::class.java)
@@ -195,5 +228,14 @@ class MainActivity : AppCompatActivity() {
     private fun navigateTo(activityClass: Class<*>) {
         startActivity(Intent(this, activityClass))
         finish()
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val networkCapabilities =
+            connectivityManager.getNetworkCapabilities(network) ?: return false
+        return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }

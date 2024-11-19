@@ -62,6 +62,15 @@ class EmpleadorRegistrar : AppCompatActivity() {
         binding.passwordlog.setSelection(binding.passwordlog.text.length) // Mover el cursor al final
     }
 
+    private fun saveUserData(username: String, email: String, ) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserName", username)
+        editor.putString("UserEmail", email)
+        editor.apply()
+    }
+
+
     private fun registerBusiness() {
         val nombreservicio = binding.Servicio1.text.toString().trim()
         val dni = binding.DNI1.text.toString().trim()
@@ -111,6 +120,8 @@ class EmpleadorRegistrar : AppCompatActivity() {
                     if (userId != null) {
                         db.collection("Empleadores").document(userId).set(empresa)
                             .addOnSuccessListener {
+                                saveUserType(1)
+                                saveUserData(nombreservicio, correo)
                                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 // Redirigir al MainActivity después del registro exitoso
                                 startActivity(Intent(this, MainActivity::class.java))
@@ -140,5 +151,12 @@ class EmpleadorRegistrar : AppCompatActivity() {
                 Toast.makeText(this, "Error en el registro: ${exception?.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun saveUserType(userType: Int) {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt("UserType", userType)
+        editor.apply()
     }
 }

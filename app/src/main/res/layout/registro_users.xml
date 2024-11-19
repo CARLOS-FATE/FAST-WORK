@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UsuarioRegistrar">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:padding="16dp">
+
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:id="@+id/regempresa"
+                android:layout_width="300dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="Registro Usuario"
+                android:textColor="#1e1f22"
+                android:textSize="34sp" />
+            <!-- Contenedor centrado de los elementos -->
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="600dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="100dp"
+                android:layout_marginEnd="40dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/nomUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <EditText
+                    android:id="@+id/Nomempresa"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Carlos Enrique Dominguez" />
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Teléfono"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <EditText
+                    android:id="@+id/phone1"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="987456123" />
+
+                <TextView
+                    android:id="@+id/Correoa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Correo Electrónico"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <EditText
+                    android:id="@+id/Correoa1"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Ejemplo@gmail.com" />
+
+                <!-- Contenedor para el EditText de contraseña con el ícono de ojo -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:id="@+id/Pass"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Contraseña"
+                        android:textColor="@android:color/holo_blue_dark" />
+
+                    <EditText
+                        android:id="@+id/passwordlog"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_below="@id/Pass"
+                        android:layout_marginTop="8dp"
+                        android:hint="Contraseña"
+                        android:inputType="textPassword" />
+
+                    <!-- Ícono de ojo para mostrar/ocultar la contraseña -->
+                    <ImageView
+                        android:id="@+id/eye_icon"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_alignTop="@id/passwordlog"
+                        android:layout_alignBottom="@id/passwordlog"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="-1dp"
+                        android:padding="5dp"
+                        android:src="@drawable/eyepass" />
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/registraru"
+                    android:layout_width="150dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:text="Resgistrarse"
+                    android:textColor="#1e1f22" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

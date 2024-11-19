@@ -1,0 +1,155 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/userImageView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@drawable/rounded_shadow"
+            android:contentDescription="@string/logo"
+            android:src="@drawable/fastwork" />
+
+
+        <EditText
+            android:id="@+id/userLogin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/ingresar_gmail"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:textColor="@color/black"
+            android:textColorHint="#757575"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edittext_background"
+            android:padding="12dp">
+
+            <EditText
+                android:id="@+id/passwordLogin"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:autofillHints=""
+                android:hint="@string/ingresar_contraseña"
+                android:inputType="textPassword"
+                android:paddingEnd="50dp"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/eyeicon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/visualizar_password"
+                android:padding="8dp"
+                android:src="@drawable/eyepass" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/iniciarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/logo"
+            android:elevation="4dp"
+            android:paddingHorizontal="32dp"
+            android:text="@string/iniciar_sesion"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/forgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="10dp"
+            android:text="@string/olvida_contraseña"
+            android:textColor="@color/logo"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/createAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingVertical="10dp"
+            android:text="@string/crear_cuenta"
+            android:textColor="@color/logo"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/iniciarSesionfacebook"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/blue"
+                android:elevation="4dp"
+                android:text="@string/iniciar_sesion_facebook"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:icon="@drawable/facebook"
+                tools:ignore="ButtonStyle,TextContrastCheck" />
+
+
+            <Button
+                android:id="@+id/iniciarSesiongoogle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:elevation="4dp"
+                android:text="@string/iniciar_sesion_google"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:icon="@drawable/google"
+                tools:ignore="ButtonStyle,TextContrastCheck" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

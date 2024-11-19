@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name" translatable="false">FastWork</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Name user</string>
+    <string name="nav_header_subtitle">userguest@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_compras">Compras</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_cerrar_session">Cerrar Session</string>
+    <string name="lorem_ipsum">ipsum</string>
+
+    <string name="ingresar_contraseña">************</string>
+    <string name="ingresar_gmail">example@gmail.com</string>
+
+        <string name="iniciar_sesion">Iniciar Sesion</string>
+    <string name="iniciar_sesion_google">GOOGLE</string>
+    <string name="iniciar_sesion_facebook">FACEBOOK</string>
+    <string name="registro_login">REGISTRAR</string>
+    <string name="olvida_contraseña"><a href="">¿Olvidaste la contraseña?</a></string>
+    <string name="crear_cuenta">¿Aún no tienes cuenta? <a href="">Registrate aquí</a> </string>
+    <string name="visualizar_password">Visualizar password</string>
+    <string name="logo">FAST WORK</string>
+    <string name="drawer_open">Abrir menú</string>
+    <string name="drawer_close">Cerrar menú</string>
+    <string name="nav_settings">Navegar Configuración </string>
+    <string name="facebook_app_id">2340511886287430</string>
+
+
+    <string name="titulo_compromiso"> <b>ACUERDO DE COMPROMISO</b></string>
+    <string name="acta_compromiso">
+        Antes de continuar con el proceso de adopción, debes comprometerte con lo siguiente: \n\n
+        <b>Cuidado y Bienestar:</b> Me comprometo a proporcionar a la mascota todas las necesidades básicas \n\n
+        <b>Ambiente Apropiado:</b> Aseguraré que el entorno en el que vive la mascota sea seguro, limpio y enriquecedor. \n\n
+        <b>Atención Médica:</b> Prometo brindar atención veterinaria preventiva, incluyendo vacunas, desparasitación y esterilización/castración según las recomendaciones del veterinario. \n\n
+        <b>Educación y Entrenamiento:</b> Trabajaré en la socialización y el entrenamiento básico de la mascota para promover un comportamiento adecuado y establecer una relación positiva y respetuosa. \n\n
+        <b>Permanencia en el Hogar:</b> Entiendo que la mascota adoptada será un miembro permanente de mi familia y me comprometo a no abandonarla ni cederla a terceros, a menos que sea absolutamente necesario.\n\n
+        Recuerda que en caso de incumplimiento de estos términos y condiciones establecidos se procederá a inhabilitar al usuario de la aplicación AdoptaMovil \n\n
+    </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

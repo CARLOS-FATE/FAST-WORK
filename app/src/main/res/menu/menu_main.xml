@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="como.firebase.hackaton.MainActivity"
+    >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/compras"
+            android:title="@string/menu_compras" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/setingsa"
+            android:title="@string/menu_settings" />
+        <item
+            android:id="@+id/nav_cerrar_session"
+            android:icon="@drawable/cerrarsesion"
+            android:title="@string/menu_cerrar_session" />
+    </group>
+</menu>

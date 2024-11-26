@@ -62,10 +62,10 @@ class UsuarioRegistrar : AppCompatActivity() {
         val nombre = binding.Nomempresa.text.toString().trim()
         val telefono = binding.phone1.text.toString().trim()
         val email = binding.Correoa1.text.toString().trim()
-        val contraseña = binding.passwordlog.text.toString().trim()
+        val contrasena = binding.passwordlog.text.toString().trim()
 
         // Validación de campos vacíos
-        if (nombre.isEmpty() || telefono.isEmpty() || email.isEmpty() || contraseña.isEmpty()) {
+        if (nombre.isEmpty() || telefono.isEmpty() || email.isEmpty() || contrasena.isEmpty()) {
             Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
@@ -76,15 +76,17 @@ class UsuarioRegistrar : AppCompatActivity() {
         }
 
         // Registro en Firebase Authentication
-        auth.createUserWithEmailAndPassword(email, contraseña)
+        auth.createUserWithEmailAndPassword(email, contrasena)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid
+                    val token = auth.currentUser?.getIdToken(false)?.result?.token
 
                     val user = hashMapOf(
                         "nombre" to nombre,
                         "telefono" to telefono,
-                        "email" to email
+                        "email" to email,
+                        "token" to token,
                     )
 
                     // Guardar datos adicionales en Firestore
@@ -92,7 +94,7 @@ class UsuarioRegistrar : AppCompatActivity() {
                         db.collection("usuarios").document(userId).set(user)
                             .addOnSuccessListener {
                                 saveUserType(2)
-                                saveUserData(nombre, email)
+                                saveUserData(nombre, email, token)
                                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
@@ -129,11 +131,12 @@ class UsuarioRegistrar : AppCompatActivity() {
         editor.apply()
     }
 
-    private fun saveUserData(username: String, email: String, ) {
+    private fun saveUserData(username: String, email: String, token: String?) {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("UserName", username)
         editor.putString("UserEmail", email)
+        editor.putString("Token", token)
         editor.apply()
     }
 

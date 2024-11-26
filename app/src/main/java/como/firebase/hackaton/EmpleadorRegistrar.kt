@@ -62,11 +62,12 @@ class EmpleadorRegistrar : AppCompatActivity() {
         binding.passwordlog.setSelection(binding.passwordlog.text.length) // Mover el cursor al final
     }
 
-    private fun saveUserData(username: String, email: String, ) {
+    private fun saveUserData(username: String, email: String, token: String?) {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("UserName", username)
         editor.putString("UserEmail", email)
+        editor.putString("Token", token)
         editor.apply()
     }
 
@@ -79,11 +80,11 @@ class EmpleadorRegistrar : AppCompatActivity() {
         val departamento = binding.departamento1.text.toString().trim()
         val ciudad = binding.ciudad1.text.toString().trim()
         val correo = binding.Correoa1.text.toString().trim()
-        val contraseña = binding.passwordlog.text.toString().trim()
+        val contrasena = binding.passwordlog.text.toString().trim()
 
         // Validación de los campos
         if (nombreservicio.isEmpty() || dni.isEmpty() || telefono.isEmpty() ||
-            nombrepais.isEmpty() || departamento.isEmpty() || ciudad.isEmpty() || correo.isEmpty() || contraseña.isEmpty()) {
+            nombrepais.isEmpty() || departamento.isEmpty() || ciudad.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
             Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
@@ -101,10 +102,11 @@ class EmpleadorRegistrar : AppCompatActivity() {
         }
 
         // Crear usuario en Firebase Authentication
-        auth.createUserWithEmailAndPassword(correo, contraseña)
+        auth.createUserWithEmailAndPassword(correo, contrasena)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid
+                    val token = auth.currentUser?.getIdToken(false)?.result?.token
 
                     // Guardar información adicional en Firestore
                     val empresa = hashMapOf(
@@ -114,14 +116,15 @@ class EmpleadorRegistrar : AppCompatActivity() {
                         "nombrepais" to nombrepais,
                         "departamento" to departamento,
                         "ciudad" to ciudad,
-                        "correo" to correo
+                        "correo" to correo,
+                        "token" to token,
                     )
 
                     if (userId != null) {
                         db.collection("Empleadores").document(userId).set(empresa)
                             .addOnSuccessListener {
                                 saveUserType(1)
-                                saveUserData(nombreservicio, correo)
+                                saveUserData(nombreservicio, correo, token)
                                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 // Redirigir al MainActivity después del registro exitoso
                                 startActivity(Intent(this, MainActivity::class.java))
@@ -152,6 +155,7 @@ class EmpleadorRegistrar : AppCompatActivity() {
             }
         }
     }
+
 
     private fun saveUserType(userType: Int) {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)

@@ -1,12 +1,14 @@
 package como.firebase.hackaton
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -18,9 +20,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseUser
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
 import como.firebase.hackaton.MapaUsuarios.UserData
 import android.content.Intent as Intent1
 
@@ -40,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var isPasswordVisible = false
     private lateinit var db: FirebaseFirestore
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var messaging: FirebaseMessaging
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize FirebaseAuth
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+        messaging = FirebaseMessaging.getInstance()
 
         // Initialize views
         initializeViews()
@@ -78,17 +84,15 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     val uid = user?.uid ?: ""
-                    checkUserType(uid) // Use the UID
+                    val token = user?.getIdToken(false)?.result?.token ?: ""
+                    checkUserType(uid, token) // Use the UID
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
                 }
             }
     }
 
-    private fun updateUI(user: FirebaseUser?) {
-    }
 
     private fun initializeViews() {
         emailEditText = findViewById(R.id.userLogin)
@@ -105,7 +109,6 @@ class MainActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-
     }
 
     private fun configureButtonActions() {
@@ -142,9 +145,10 @@ class MainActivity : AppCompatActivity() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
+                                val token = auth.currentUser?.getIdToken(false)?.result?.token
                                 showToast("Inicio de sesión exitoso")
                                 val userId = auth.currentUser?.uid
-                                checkUserType(userId ?: "")
+                                checkUserType(userId ?: "", token)
                             } else {
                                 showToast("Error de autenticación: ${task.exception?.message}")
                             }
@@ -167,6 +171,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun SaveUserTokenAuth(token: String, userId: String, usertype: Int) {
+        if (usertype == 1) {
+            db.collection("Empleadores").document(userId).update("token", token)
+        }
+
+        if (usertype == 2) {
+            db.collection("usuarios").document(userId).update("token", token)
+        }
+
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserToken", token)
+        editor.apply()
+    }
+
     private fun saveUserType(userType: Int) {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -184,7 +203,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun checkUserType(userId: String) {
+    private fun checkUserType(userId: String, token: String? = null) {
         // Check in Empleadores collection
         db.collection("Empleadores").document(userId).get()
             .addOnCompleteListener { task ->
@@ -195,6 +214,7 @@ class MainActivity : AppCompatActivity() {
                         task.result.getString("nombreServicio") ?: "",
                         task.result.getString("correo") ?: ""
                     )
+                    SaveUserTokenAuth(token ?: "", userId, 1)
                     saveUserType(1)
                     navigateTo(MapaUsuarios::class.java)
                 } else {
@@ -205,6 +225,8 @@ class MainActivity : AppCompatActivity() {
                                 // User ID found in Usuarios collection
                                 showToast("El usuario pertenece a un Usuario")
                                 saveUserType(2)
+                                SaveUserTokenAuth(token ?: "", userId, 2)
+
                                 saveUserData(
                                     userTask.result.getString("nombre") ?: "",
                                     userTask.result.getString("email") ?: "",
@@ -223,6 +245,7 @@ class MainActivity : AppCompatActivity() {
                                     .addOnSuccessListener {
                                         showToast("Nuevo usuario creado")
                                         saveUserType(2)
+                                        SaveUserTokenAuth(token ?: "", userId, 2)
                                         navigateTo(MapaUsuarios::class.java)
                                     }
                                     .addOnFailureListener { exception ->
@@ -390,6 +413,5 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "GoogleActivity"
         private const val RC_SIGN_IN = 9001
     }
-
 
 }

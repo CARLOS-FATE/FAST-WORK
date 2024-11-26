@@ -13,7 +13,7 @@
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_compras">Compras</string>
-    <string name="menu_settings">Settings</string>
+    <string name="menu_settings">QR Trabajador</string>
     <string name="menu_cerrar_session">Cerrar Session</string>
     <string name="lorem_ipsum">ipsum</string>
 
@@ -32,7 +32,6 @@
     <string name="drawer_close">Cerrar menú</string>
     <string name="nav_settings">Navegar Configuración </string>
     <string name="facebook_app_id">2340511886287430</string>
-
 
     <string name="titulo_compromiso"> <b>ACUERDO DE COMPROMISO</b></string>
     <string name="acta_compromiso">

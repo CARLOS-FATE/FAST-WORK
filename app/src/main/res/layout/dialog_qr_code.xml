@@ -6,6 +6,15 @@
     android:padding="16dp"
     android:gravity="center">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QR DE PAGO DEL TRABAJADOR"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
+
     <ImageView
         android:id="@+id/qrImageView"
         android:layout_width="300dp"

@@ -3,6 +3,8 @@ package como.firebase.hackaton
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -24,6 +26,9 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.google.zxing.qrcode.QRCodeWriter
 
 class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
 
@@ -40,7 +45,12 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
-    data class UserData(val username: String?, val email: String?, val userType: Int)
+    data class UserData(
+        val username: String?,
+        val email: String?,
+        val userType: Int,
+        val telefono: String?
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,13 +102,44 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
 
     private fun configureMenuItems() {
         val menu = navigationView.menu
+        val qrsettings = menu.findItem(R.id.nav_qrsettings)
         menu.findItem(R.id.nav_home).isVisible = false
-        menu.findItem(R.id.nav_settings).isVisible = false
+        if (userData?.userType != 1) {
+            qrsettings.isVisible = true
+            qrsettings.setOnMenuItemClickListener {
+                showQRSettings()
+                true
+            }
+        } else {
+            qrsettings.isVisible = false
+        }
     }
 
     private fun handleNavigationMenuSelection(itemId: Int) {
         when (itemId) {
             else -> logout()
+        }
+    }
+
+    private fun showQRSettings() {
+        val phoneNumber = userData?.telefono
+        Toast.makeText(this, "QR Settings $phoneNumber", Toast.LENGTH_SHORT).show()
+        if (phoneNumber != null) {
+            val qrBitmap = generateQRCode(phoneNumber)
+            if (qrBitmap != null) {
+                val qrDialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
+                val qrImageView = qrDialogView.findViewById<ImageView>(R.id.qrImageView)
+                qrImageView.setImageBitmap(qrBitmap)
+
+                AlertDialog.Builder(this)
+                    .setView(qrDialogView)
+                    .setPositiveButton("Cerrar") { dialog, _ -> dialog.dismiss() }
+                    .show()
+            } else {
+                showToast("Error al generar el código QR")
+            }
+        } else {
+            showToast("Número de teléfono no disponible")
         }
     }
 
@@ -297,43 +338,44 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
-  private fun addMarker(jobData: Map<String, Any>) {
-    val jobLat = jobData["lat"] as? Double
-    val jobLng = jobData["lng"] as? Double
+    private fun addMarker(jobData: Map<String, Any>) {
+        val jobLat = jobData["lat"] as? Double
+        val jobLng = jobData["lng"] as? Double
 
-    if (jobLat != null && jobLng != null) {
-        val jobLatLng = LatLng(jobLat, jobLng)
-        googleMap?.addMarker(
-            MarkerOptions()
-                .position(jobLatLng)
-                .title(jobData["nombre"] as? String ?: "Empleo")
-                .snippet(jobData["descripcion"] as? String)
-        )
+        if (jobLat != null && jobLng != null) {
+            val jobLatLng = LatLng(jobLat, jobLng)
+            googleMap?.addMarker(
+                MarkerOptions()
+                    .position(jobLatLng)
+                    .title(jobData["nombre"] as? String ?: "Empleo")
+                    .snippet(jobData["descripcion"] as? String)
+            )
+        }
     }
-}
 
     override fun onMapReady(map: GoogleMap) {
-    googleMap = map
-    if (checkLocationPermission()) {
-        googleMap?.isMyLocationEnabled = true
+        googleMap = map
+        if (checkLocationPermission()) {
+            googleMap?.isMyLocationEnabled = true
+        }
+
+        val corner1 = LatLng(-8.131912, -79.096836)
+        val corner2 = LatLng(-8.053898, -78.927808)
+        val bounds = LatLngBounds(corner1, corner2)
+
+        googleMap?.setMinZoomPreference(12f)
+        googleMap?.setMaxZoomPreference(15f)
+        googleMap?.setLatLngBoundsForCameraTarget(bounds)
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0))
     }
 
-    val corner1 = LatLng(-8.131912, -79.096836)
-    val corner2 = LatLng(-8.053898, -78.927808)
-    val bounds = LatLngBounds(corner1, corner2)
 
-    googleMap?.setMinZoomPreference(12f)
-    googleMap?.setMaxZoomPreference(15f)
-    googleMap?.setLatLngBoundsForCameraTarget(bounds)
-    googleMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0))
-}
-
-
-    private fun saveUserData(username: String, email: String) {
+    private fun saveUserData(username: String, email: String, telefono: String = "") {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("UserName", username)
         editor.putString("UserEmail", email)
+        editor.putString("telefono", telefono)
         editor.putString("UserID", auth.currentUser?.uid)
         editor.apply()
     }
@@ -365,7 +407,27 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
         val username = sharedPreferences.getString("UserName", "")
         val email = sharedPreferences.getString("UserEmail", "")
         val userType = sharedPreferences.getInt("UserType", 0)
-        return UserData(username, email, userType)
+        val telefono = sharedPreferences.getString("telefono", "")
+        return UserData(username, email, userType, telefono)
+    }
+
+    private fun generateQRCode(data: String): Bitmap? {
+        val writer = QRCodeWriter()
+        return try {
+            val bitMatrix = writer.encode(data, BarcodeFormat.QR_CODE, 512, 512)
+            val width = bitMatrix.width
+            val height = bitMatrix.height
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bmp.setPixel(x, y, if (bitMatrix.get(x, y)) Color.BLACK else Color.WHITE)
+                }
+            }
+            bmp
+        } catch (e: WriterException) {
+            e.printStackTrace()
+            null
+        }
     }
 
 

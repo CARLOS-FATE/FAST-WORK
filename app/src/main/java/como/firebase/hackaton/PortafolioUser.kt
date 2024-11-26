@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.type.LatLng
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
@@ -77,7 +76,8 @@ class PortafolioUser : AppCompatActivity(),
         val username = sharedPreferences.getString("UserName", "")
         val email = sharedPreferences.getString("UserEmail", "")
         val userType = sharedPreferences.getInt("UserType", 0)
-        return UserData(username, email, userType)
+        val telefono = sharedPreferences.getString("UserPhoneNumber", "")
+        return UserData(username, email, userType, telefono)
     }
 
     private fun getEmpleosData(

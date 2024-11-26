@@ -1,10 +1,11 @@
 package como.firebase.hackaton
 
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import como.firebase.hackaton.MapaUsuarios.UserData
+import android.content.Intent as Intent1
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var isPasswordVisible = false
     private lateinit var db: FirebaseFirestore
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +48,8 @@ class MainActivity : AppCompatActivity() {
         // Initialize FirebaseAuth
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+
+        // Initialize views
         initializeViews()
 
         // Initialize Facebook CallbackManager
@@ -57,6 +69,27 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithCredential:success")
+                    val user = auth.currentUser
+                    val uid = user?.uid ?: ""
+                    checkUserType(uid) // Use the UID
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    updateUI(null)
+                }
+            }
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+    }
+
     private fun initializeViews() {
         emailEditText = findViewById(R.id.userLogin)
         passwordEditText = findViewById(R.id.passwordLogin)
@@ -66,6 +99,13 @@ class MainActivity : AppCompatActivity() {
         forgotPasswordText = findViewById(R.id.forgotPassword)
         createAccountText = findViewById(R.id.createAccount)
         eyeIcon = findViewById(R.id.eyeicon)
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
     }
 
     private fun configureButtonActions() {
@@ -87,23 +127,43 @@ class MainActivity : AppCompatActivity() {
         val password = passwordEditText.text.toString()
 
         if (email.isNotEmpty() && password.isNotEmpty()) {
-
             if (isNetworkAvailable(this)) {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            showToast("Inicio de sesión exitoso")
-                            val userId = auth.currentUser?.uid
-                            checkUserType(userId ?: "")
-                        } else {
-                            showToast("Error de autenticación: ${task.exception?.message}")
+                // Inflate the terms and conditions dialog layout
+                val dialogView = layoutInflater.inflate(R.layout.dialog_terminos_condiciones, null)
+                val dialog = AlertDialog.Builder(this)
+                    .setView(dialogView)
+                    .setCancelable(false)
+                    .create()
+
+                // Set up the buttons in the dialog
+                dialogView.findViewById<Button>(R.id.btnAceptarT).setOnClickListener {
+                    // User accepted the terms
+                    dialog.dismiss()
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                showToast("Inicio de sesión exitoso")
+                                val userId = auth.currentUser?.uid
+                                checkUserType(userId ?: "")
+                            } else {
+                                showToast("Error de autenticación: ${task.exception?.message}")
+                            }
                         }
-                    }
+                }
+
+                dialogView.findViewById<Button>(R.id.btnNoAceptarT).setOnClickListener {
+                    // User did not accept the terms
+                    dialog.dismiss()
+                    showToast("Debe aceptar los términos y condiciones para continuar")
+                }
+
+                // Show the dialog
+                dialog.show()
             } else {
-                showToast("Por favor, completa todos los campos")
+                showToast("No hay conexión a Internet")
             }
         } else {
-            showToast("No hay conexión a Internet")
+            showToast("Por favor, completa todos los campos")
         }
     }
 
@@ -114,11 +174,12 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    private fun saveUserData(username: String, email: String, ) {
+    private fun saveUserData(username: String, email: String, telefono: String = "") {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("UserName", username)
         editor.putString("UserEmail", email)
+        editor.putString("telefono", telefono)
         editor.apply()
     }
 
@@ -130,7 +191,10 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful && task.result.exists()) {
                     // User ID found in Empleadores collection
                     showToast("El usuario pertenece a un Empleador")
-                    saveUserData(task.result.getString("nombreServicio") ?: "", task.result.getString("correo") ?: "")
+                    saveUserData(
+                        task.result.getString("nombreServicio") ?: "",
+                        task.result.getString("correo") ?: ""
+                    )
                     saveUserType(1)
                     navigateTo(MapaUsuarios::class.java)
                 } else {
@@ -141,12 +205,29 @@ class MainActivity : AppCompatActivity() {
                                 // User ID found in Usuarios collection
                                 showToast("El usuario pertenece a un Usuario")
                                 saveUserType(2)
-                                saveUserData(userTask.result.getString("nombre") ?: "", userTask.result.getString("email") ?: "")
+                                saveUserData(
+                                    userTask.result.getString("nombre") ?: "",
+                                    userTask.result.getString("email") ?: "",
+                                    userTask.result.getString("telefono") ?: ""
+                                )
                                 navigateTo(MapaUsuarios::class.java)
                             } else {
-                                // User ID not found in either collection
-                                showToast("El usuario no se encuentra registrado")
-                                saveUserType(0)
+                                // User ID not found in either collection, create new user
+                                val userData = getUserData()
+                                val newUser = hashMapOf(
+                                    "nombre" to userData.username,
+                                    "email" to userData.email,
+                                    "telefono" to userData.telefono
+                                )
+                                db.collection("usuarios").document(userId).set(newUser)
+                                    .addOnSuccessListener {
+                                        showToast("Nuevo usuario creado")
+                                        saveUserType(2)
+                                        navigateTo(MapaUsuarios::class.java)
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        showToast("Error al crear el usuario: ${exception.message}")
+                                    }
                             }
                         }
                 }
@@ -154,6 +235,15 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 showToast("Error al verificar el tipo de usuario: ${exception.message}")
             }
+    }
+
+    private fun getUserData(): UserData {
+        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
+        val username = sharedPreferences.getString("UserName", "")
+        val email = sharedPreferences.getString("UserEmail", "")
+        val userType = sharedPreferences.getInt("UserType", 0)
+        val telefono = sharedPreferences.getString("telefono", "")
+        return UserData(username, email, userType, telefono)
     }
 
     private fun loginWithFacebook() {
@@ -190,7 +280,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginWithGoogle() {
-        showToast("Iniciar sesión con Google no implementado")
+        if (!isNetworkAvailable(this)) {
+            showToast("No hay conexión a Internet")
+            return
+        }
+
+        val inflater = layoutInflater
+
+        // Inflate the terms and conditions dialog layout
+        val dialogView = inflater.inflate(R.layout.dialog_terminos_condiciones, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Set up the buttons in the dialog
+        dialogView.findViewById<Button>(R.id.btnAceptarT).setOnClickListener {
+            saveUserType(2)
+            singInGoogle()
+            dialog.dismiss() // Dismiss the first dialog before showing the second one
+        }
+
+        dialogView.findViewById<Button>(R.id.btnNoAceptarT).setOnClickListener {
+            dialog.dismiss()
+            showToast("Debe aceptar los términos y condiciones para continuar")
+        }
+
+        // Show the first dialog
+        dialog.show()
+    }
+
+
+    private fun singInGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
 
@@ -216,17 +339,41 @@ class MainActivity : AppCompatActivity() {
         passwordEditText.setSelection(passwordEditText.text.length)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent1?) {
         super.onActivityResult(requestCode, resultCode, data)
-        callbackManager.onActivityResult(requestCode, resultCode, data)
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
+
+                // Retrieve user details
+                val email = account.email
+                val displayName = account.displayName
+
+                saveUserData(displayName ?: "", email ?: "", "")
+
+                // Authenticate with Firebase
+                firebaseAuthWithGoogle(account.idToken!!)
+
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e)
+            }
+        }
     }
+
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateTo(activityClass: Class<*>) {
-        startActivity(Intent(this, activityClass))
+        startActivity(Intent1(this, activityClass))
         finish()
     }
 
@@ -238,4 +385,11 @@ class MainActivity : AppCompatActivity() {
             connectivityManager.getNetworkCapabilities(network) ?: return false
         return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
+
+    companion object {
+        private const val TAG = "GoogleActivity"
+        private const val RC_SIGN_IN = 9001
+    }
+
+
 }

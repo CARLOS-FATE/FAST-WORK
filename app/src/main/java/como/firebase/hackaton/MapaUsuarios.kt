@@ -1,12 +1,14 @@
 package como.firebase.hackaton
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -122,9 +124,9 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun showQRSettings() {
-        val phoneNumber = userData?.telefono
-        Toast.makeText(this, "QR Settings $phoneNumber", Toast.LENGTH_SHORT).show()
-        if (phoneNumber != null) {
+        val phoneNumber = userData?.telefono ?: ""
+
+        if (phoneNumber.isNotBlank()) {
             val qrBitmap = generateQRCode(phoneNumber)
             if (qrBitmap != null) {
                 val qrDialogView = layoutInflater.inflate(R.layout.dialog_qr_code, null)
@@ -139,7 +141,46 @@ class MapaUsuarios : AppCompatActivity(), OnMapReadyCallback {
                 showToast("Error al generar el código QR")
             }
         } else {
-            showToast("Número de teléfono no disponible")
+            showToast("Error: No se ha registrado un número de teléfono")
+            showAddPhoneNumberDialog()
+
+        }
+    }
+
+    private fun showAddPhoneNumberDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_phone_number, null)
+        val phoneNumberEditText = dialogView.findViewById<EditText>(R.id.phoneEditText)
+
+        AlertDialog.Builder(this)
+            .setTitle("Agregar Teléfono")
+            .setView(dialogView)
+            .setPositiveButton("Guardar") { dialog, _ ->
+                val phoneNumber = phoneNumberEditText.text.toString()
+                if (phoneNumber.isNotBlank()) {
+                    savePhoneNumberToFirebase(phoneNumber)
+                } else {
+                    showToast("El número de teléfono no puede estar vacío")
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+    private fun savePhoneNumberToFirebase(phoneNumber: String) {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            db.collection("usuarios").document(userId)
+                .update("telefono", phoneNumber)
+                .addOnSuccessListener {
+                    showToast("Número de teléfono actualizado")
+                    logout()
+                }
+                .addOnFailureListener { exception ->
+                    showToast("Error al actualizar el número de teléfono: ${exception.message}")
+                }
+        } else {
+            showToast("Error: Usuario no autenticado")
         }
     }
 

@@ -47,6 +47,14 @@
           }
         },
         {
+          "client_id": "615185227525-i884ug7l7v60b07h0tri9qkj7alak3oc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "como.firebase.hackaton",
+            "certificate_hash": "c9795119226d7aa78df19214e5373960572c5e37"
+          }
+        },
+        {
           "client_id": "615185227525-5ouhbe7rvuudcklcu71i8ht008qej11i.apps.googleusercontent.com",
           "client_type": 3
         }

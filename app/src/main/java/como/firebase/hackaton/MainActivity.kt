@@ -67,10 +67,14 @@ class MainActivity : AppCompatActivity() {
         // Set text color in EditTexts
         setTextColor()
 
-        // Check if user is already logged in
-        if (auth.currentUser != null) {
-            // User is logged in, navigate to MapaUsuarios activity
+        val currentUser = auth.currentUser
+        if (currentUser != null && currentUser.isEmailVerified) {
+            // Si el correo está verificado, redirigir al mapa
             navigateTo(MapaUsuarios::class.java)
+        } else if (currentUser != null) {
+            // Si el correo no está verificado, cerrar sesión y mostrar mensaje
+            auth.signOut()
+            showToast("Por favor, verifica tu correo electrónico antes de acceder")
         }
     }
 
@@ -131,24 +135,30 @@ class MainActivity : AppCompatActivity() {
 
         if (email.isNotEmpty() && password.isNotEmpty()) {
             if (isNetworkAvailable(this)) {
-                // Inflate the terms and conditions dialog layout
+                // Mostrar términos y condiciones
                 val dialogView = layoutInflater.inflate(R.layout.dialog_terminos_condiciones, null)
                 val dialog = AlertDialog.Builder(this)
                     .setView(dialogView)
                     .setCancelable(false)
                     .create()
 
-                // Set up the buttons in the dialog
                 dialogView.findViewById<Button>(R.id.btnAceptarT).setOnClickListener {
-                    // User accepted the terms
                     dialog.dismiss()
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                val token = auth.currentUser?.getIdToken(false)?.result?.token
-                                showToast("Inicio de sesión exitoso")
-                                val userId = auth.currentUser?.uid
-                                checkUserType(userId ?: "", token)
+                                val currentUser = auth.currentUser
+                                if (currentUser != null && currentUser.isEmailVerified) {
+                                    // Si el correo está verificado, continuar
+                                    showToast("Inicio de sesión exitoso")
+                                    val userId = currentUser.uid
+                                    val token = currentUser.getIdToken(false)?.result?.token
+                                    checkUserType(userId, token)
+                                } else {
+                                    // Si no está verificado, cerrar sesión y mostrar mensaje
+                                    showToast("Debes verificar tu correo electrónico antes de iniciar sesión")
+                                    auth.signOut()
+                                }
                             } else {
                                 showToast("Error de autenticación: ${task.exception?.message}")
                             }
@@ -156,12 +166,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 dialogView.findViewById<Button>(R.id.btnNoAceptarT).setOnClickListener {
-                    // User did not accept the terms
                     dialog.dismiss()
                     showToast("Debe aceptar los términos y condiciones para continuar")
                 }
 
-                // Show the dialog
                 dialog.show()
             } else {
                 showToast("No hay conexión a Internet")
@@ -170,6 +178,7 @@ class MainActivity : AppCompatActivity() {
             showToast("Por favor, completa todos los campos")
         }
     }
+
 
     private fun SaveUserTokenAuth(token: String, userId: String, usertype: Int) {
         if (usertype == 1) {

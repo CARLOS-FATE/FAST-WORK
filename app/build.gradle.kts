@@ -63,11 +63,11 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.messaging)
     //fb
     implementation(libs.facebook.login)
     implementation(libs.facebook.android.sdk)
     implementation(libs.google.firebase.auth)
-    implementation(libs.firebase.messaging)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

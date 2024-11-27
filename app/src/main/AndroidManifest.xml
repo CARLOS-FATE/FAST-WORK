@@ -71,5 +71,6 @@
             android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
             tools:node="remove" />
 
+
     </application>
 </manifest>

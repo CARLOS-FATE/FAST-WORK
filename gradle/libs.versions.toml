@@ -52,7 +52,7 @@ firebase-crashlytics ={group = "com.google.firebase", name = "firebase-crashlyti
 firebase-database ={group = "com.google.firebase", name = "firebase-database-ktx"}
 firebaseStorage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorageV" }
 google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuthVersion" }
-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref ="firebaseMessaging" }
 
 
 [plugins]

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import como.firebase.hackaton.databinding.RegistroUsersBinding
-import net.bytebuddy.asm.Advice.This
 
 class UsuarioRegistrar : AppCompatActivity() {
     private lateinit var binding: RegistroUsersBinding
@@ -33,8 +32,10 @@ class UsuarioRegistrar : AppCompatActivity() {
         binding.registraru.setOnClickListener {
             registerUser()
         }
-        binding.Nomempresa.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.phone1.setTextColor(ContextCompat.getColor(this,R.color.black))
+
+        // Configurar colores del texto
+        binding.Nomempresa.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.phone1.setTextColor(ContextCompat.getColor(this, R.color.black))
         binding.Correoa1.setTextColor(ContextCompat.getColor(this, R.color.black))
         binding.passwordlog.setTextColor(ContextCompat.getColor(this, R.color.black))
     }
@@ -69,6 +70,7 @@ class UsuarioRegistrar : AppCompatActivity() {
             Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
+
         // Validación de teléfono (solo números, longitud 9)
         if (!telefono.matches("\\d{9}".toRegex())) {
             Toast.makeText(this, "El teléfono debe tener exactamente 9 dígitos numéricos", Toast.LENGTH_SHORT).show()
@@ -79,34 +81,52 @@ class UsuarioRegistrar : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, contrasena)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val userId = auth.currentUser?.uid
-                    val token = auth.currentUser?.getIdToken(false)?.result?.token
+                    val currentUser = auth.currentUser
 
-                    val user = hashMapOf(
-                        "nombre" to nombre,
-                        "telefono" to telefono,
-                        "email" to email,
-                        "token" to token,
-                    )
+                    // Enviar correo de verificación
+                    currentUser?.sendEmailVerification()?.addOnCompleteListener { verificationTask ->
+                        if (verificationTask.isSuccessful) {
+                            Toast.makeText(
+                                this,
+                                "Registro exitoso. Verifica tu correo para activar la cuenta.",
+                                Toast.LENGTH_LONG
+                            ).show()
 
-                    // Guardar datos adicionales en Firestore
-                    if (userId != null) {
-                        db.collection("usuarios").document(userId).set(user)
-                            .addOnSuccessListener {
-                                saveUserType(2)
-                                saveUserData(nombre, email, token)
-                                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, "Error al registrar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
+                            // Guardar datos en Firestore
+                            saveUserToFirestore(currentUser.uid, nombre, telefono, email)
+
+                            // Redirigir a la pantalla de inicio de sesión
+                            startActivity(Intent(this, MainActivity::class.java)) // MainActivity es la pantalla de inicio de sesión
+                            finish()
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "No se pudo enviar el correo de verificación. Intenta nuevamente.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 } else {
                     val exception = task.exception
                     handleRegistrationError(exception)
                 }
+            }
+    }
+
+    private fun saveUserToFirestore(userId: String, nombre: String, telefono: String, email: String) {
+        val user = hashMapOf(
+            "nombre" to nombre,
+            "telefono" to telefono,
+            "email" to email,
+            "verificado" to false // Indicamos que no está verificado aún
+        )
+
+        db.collection("usuarios").document(userId).set(user)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Datos guardados en Firestore", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al guardar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -123,21 +143,4 @@ class UsuarioRegistrar : AppCompatActivity() {
             }
         }
     }
-
-    private fun saveUserType(userType: Int) {
-        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putInt("UserType", userType)
-        editor.apply()
-    }
-
-    private fun saveUserData(username: String, email: String, token: String?) {
-        val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("UserName", username)
-        editor.putString("UserEmail", email)
-        editor.putString("Token", token)
-        editor.apply()
-    }
-
 }

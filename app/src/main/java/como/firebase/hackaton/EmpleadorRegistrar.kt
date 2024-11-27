@@ -88,7 +88,11 @@ class EmpleadorRegistrar : AppCompatActivity() {
             Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
-
+        // Validación de formato de correo electrónico
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            Toast.makeText(this, "Por favor, introduce un correo electrónico válido", Toast.LENGTH_SHORT).show()
+            return
+        }
         // Validación de DNI (solo números, longitud 8)
         if (!dni.matches("\\d{8}".toRegex())) {
             Toast.makeText(this, "El DNI debe tener exactamente 8 dígitos numéricos", Toast.LENGTH_SHORT).show()

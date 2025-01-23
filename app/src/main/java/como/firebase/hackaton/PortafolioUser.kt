@@ -397,6 +397,7 @@ class PortafolioUser : AppCompatActivity(),
             val userNameTextView = userView.findViewById<TextView>(R.id.userName)
             val userEmailTextView = userView.findViewById<TextView>(R.id.userEmail)
             val qrButton = userView.findViewById<Button>(R.id.qrButton)
+            val btnAceptarT = userView.findViewById<Button>(R.id.btnAceptarT)
 
             userNameTextView.text = "Nombre: ${user["nombre"]}"
             userEmailTextView.text = "Email: ${user["email"]}"
@@ -424,7 +425,13 @@ class PortafolioUser : AppCompatActivity(),
                     showToast("Número de teléfono no disponible")
                 }
             }
-
+            // Handle accept button click
+            btnAceptarT.setOnClickListener {
+                val postulanteId = user["userId"] as? String
+                if (postulanteId != null) {
+                    aceptarPostulante(postulanteId)  // Call function to accept the applicant
+                }
+            }
             postulantesContainer.addView(userView)
         }
 
@@ -530,7 +537,34 @@ class PortafolioUser : AppCompatActivity(),
             }
 
     }
-}
+
+
+    private fun aceptarPostulante(postulanteId: String) {
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            val postulanteRef = db.collection("empleosusuarios")
+                .whereEqualTo("userId", postulanteId)
+                .get()
+
+            postulanteRef.addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val empleoId = document.getString("empleoId")
+                    if (empleoId != null) {
+                        // Update the postulante's status in the collection
+                        db.collection("empleosusuarios").document(document.id)
+                            .update("estado", "aceptado")
+                            .addOnSuccessListener {
+                                showToast("Postulante aceptado con éxito")
+                                // Optionally, you can refresh the list or remove the applicant from the view
+                            }
+                            .addOnFailureListener { e ->
+                                showToast("Error al aceptar postulante: ${e.message}")
+                            }
+                    }
+                }
+            }
+        }
+    }
 
 
 private fun generateQRCode(data: String): Bitmap? {
@@ -551,6 +585,9 @@ private fun generateQRCode(data: String): Bitmap? {
         null
     }
 }
+    }
+
+
 
 
 

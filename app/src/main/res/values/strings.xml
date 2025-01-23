@@ -19,6 +19,7 @@
 
     <string name="ingresar_contraseña">************</string>
     <string name="ingresar_gmail">example@gmail.com</string>
+    <string name="aceptarbutton">Aceptar</string>
 
         <string name="iniciar_sesion">Iniciar Sesion</string>
     <string name="iniciar_sesion_google">GOOGLE</string>
@@ -35,13 +36,18 @@
 
     <string name="titulo_compromiso"> <b>ACUERDO DE COMPROMISO</b></string>
     <string name="acta_compromiso">
-        Antes de continuar con el proceso de adopción, debes comprometerte con lo siguiente: \n\n
-        <b>Cuidado y Bienestar:</b> Me comprometo a proporcionar a la mascota todas las necesidades básicas \n\n
-        <b>Ambiente Apropiado:</b> Aseguraré que el entorno en el que vive la mascota sea seguro, limpio y enriquecedor. \n\n
-        <b>Atención Médica:</b> Prometo brindar atención veterinaria preventiva, incluyendo vacunas, desparasitación y esterilización/castración según las recomendaciones del veterinario. \n\n
-        <b>Educación y Entrenamiento:</b> Trabajaré en la socialización y el entrenamiento básico de la mascota para promover un comportamiento adecuado y establecer una relación positiva y respetuosa. \n\n
-        <b>Permanencia en el Hogar:</b> Entiendo que la mascota adoptada será un miembro permanente de mi familia y me comprometo a no abandonarla ni cederla a terceros, a menos que sea absolutamente necesario.\n\n
-        Recuerda que en caso de incumplimiento de estos términos y condiciones establecidos se procederá a inhabilitar al usuario de la aplicación AdoptaMovil \n\n
+        Antes de continuar con el proceso de registro y contratación, debes comprometerte a lo siguiente:
+<b>Cuidado y Bienestar:</b> Me comprometo a brindar un trabajo responsable, cumpliendo con todas las expectativas y responsabilidades del puesto de manera eficiente y respetuosa.
+
+<b>Ambiente Apropiado:</b> Aseguraré que mi entorno de trabajo sea adecuado, profesional y adecuado para el desarrollo de las tareas asignadas, manteniendo un espacio seguro y productivo.
+
+<b>Atención a la Calidad:</b> Prometo entregar trabajos de alta calidad, cumpliendo con los plazos establecidos y siguiendo las mejores prácticas del sector.
+
+<b>Comunicación y Compromiso:</b> Trabajaré en una comunicación clara y continua con mis contratistas y empleadores, para asegurar que las expectativas y necesidades sean comprendidas y satisfechas de manera adecuada.
+
+<b>Compromiso con la Permanencia:</b> Entiendo que el trabajo que asumo es una responsabilidad importante y me comprometo a ser puntual, mantener mi integridad y no abandonar los proyectos sin justificación, a menos que se den situaciones excepcionales.
+
+Recuerda que, en caso de incumplimiento de estos términos y condiciones, el usuario será inhabilitado para continuar utilizando la aplicación "FASTWORK".
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

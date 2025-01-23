@@ -31,15 +31,16 @@ class EmpleadorRegistrar : AppCompatActivity() {
         binding.Resgistrarse.setOnClickListener {
             registerBusiness()
         }
+
         // Establecer el color del texto en negro para todos los campos de texto
-        binding.Servicio1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.DNI1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.phone1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.pais1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.departamento1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.ciudad1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.Correoa1.setTextColor(ContextCompat.getColor(this,R.color.black))
-        binding.passwordlog.setTextColor(ContextCompat.getColor(this,R.color.black))
+        binding.Servicio1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.DNI1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.phone1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.pais1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.departamento1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.ciudad1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.Correoa1.setTextColor(ContextCompat.getColor(this, R.color.black))
+        binding.passwordlog.setTextColor(ContextCompat.getColor(this, R.color.black))
     }
 
     // Configurar el ícono de ojo para mostrar u ocultar la contraseña
@@ -71,7 +72,6 @@ class EmpleadorRegistrar : AppCompatActivity() {
         editor.apply()
     }
 
-
     private fun registerBusiness() {
         val nombreservicio = binding.Servicio1.text.toString().trim()
         val dni = binding.DNI1.text.toString().trim()
@@ -88,11 +88,13 @@ class EmpleadorRegistrar : AppCompatActivity() {
             Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
+
         // Validación de formato de correo electrónico
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
             Toast.makeText(this, "Por favor, introduce un correo electrónico válido", Toast.LENGTH_SHORT).show()
             return
         }
+
         // Validación de DNI (solo números, longitud 8)
         if (!dni.matches("\\d{8}".toRegex())) {
             Toast.makeText(this, "El DNI debe tener exactamente 8 dígitos numéricos", Toast.LENGTH_SHORT).show()
@@ -112,31 +114,38 @@ class EmpleadorRegistrar : AppCompatActivity() {
                     val userId = auth.currentUser?.uid
                     val token = auth.currentUser?.getIdToken(false)?.result?.token
 
-                    // Guardar información adicional en Firestore
-                    val empresa = hashMapOf(
-                        "nombreServicio" to nombreservicio,
-                        "dni" to dni,
-                        "telefono" to telefono,
-                        "nombrepais" to nombrepais,
-                        "departamento" to departamento,
-                        "ciudad" to ciudad,
-                        "correo" to correo,
-                        "token" to token,
-                    )
+                    // Enviar correo de verificación
+                    auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { verificationTask ->
+                        if (verificationTask.isSuccessful) {
+                            // Guardar información adicional en Firestore
+                            val empresa = hashMapOf(
+                                "nombreServicio" to nombreservicio,
+                                "dni" to dni,
+                                "telefono" to telefono,
+                                "nombrepais" to nombrepais,
+                                "departamento" to departamento,
+                                "ciudad" to ciudad,
+                                "correo" to correo,
+                                "token" to token,
+                            )
 
-                    if (userId != null) {
-                        db.collection("Empleadores").document(userId).set(empresa)
-                            .addOnSuccessListener {
-                                saveUserType(1)
-                                saveUserData(nombreservicio, correo, token)
-                                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                // Redirigir al MainActivity después del registro exitoso
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
+                            if (userId != null) {
+                                db.collection("Empleadores").document(userId).set(empresa)
+                                    .addOnSuccessListener {
+                                        saveUserType(1)
+                                        saveUserData(nombreservicio, correo, token)
+                                        Toast.makeText(this, "Registro exitoso. Verifica tu correo electrónico.", Toast.LENGTH_SHORT).show()
+                                        // Redirigir al MainActivity después del registro exitoso
+                                        startActivity(Intent(this, MainActivity::class.java))
+                                        finish()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(this, "Error al registrar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
                             }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, "Error al registrar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
+                        } else {
+                            Toast.makeText(this, "No se pudo enviar el correo de verificación. Intenta nuevamente.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     val exception = task.exception
@@ -159,7 +168,6 @@ class EmpleadorRegistrar : AppCompatActivity() {
             }
         }
     }
-
 
     private fun saveUserType(userType: Int) {
         val sharedPreferences = getSharedPreferences("UserPreferences", MODE_PRIVATE)
